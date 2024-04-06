@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "946761120019",
+    "project_id": "streamit-1-0",
+    "storage_bucket": "streamit-1-0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:946761120019:android:f4325dd2ce1b410b6cc2e6",
+        "android_client_info": {
+          "package_name": "com.manuraj.stream_it_1_0"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAr9LQ48IZnviiNt3Bi1-SP2luYHloQKD8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
