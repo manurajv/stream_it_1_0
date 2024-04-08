@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
       ),
       title: 'stream_it',
       debugShowCheckedModeBanner: false,
-      initialRoute: AppRoutes.loginScreen,
+      initialRoute: AppRoutes.splashScreen,
       routes: AppRoutes.routes,
     );
   }

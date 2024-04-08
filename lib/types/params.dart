@@ -31,7 +31,7 @@ class Params {
   VideoConfig.withDefaultBitrate(resolution: Resolution.RESOLUTION_360);
   final AudioConfig audio = AudioConfig();
 
-  String rtmpUrl = "rtmp://broadcast.api.video/s/";
+  String rtmpUrl = "rtmps://live-api-s.facebook.com:443/rtmp/";
   String streamKey = "";
 
   String getResolutionToString() {

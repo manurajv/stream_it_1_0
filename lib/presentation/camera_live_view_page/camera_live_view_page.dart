@@ -43,7 +43,6 @@ class _CameraLiveViewPageState extends State<CameraLiveViewPage>
 
     _controller.initialize().catchError((e) {
       showInSnackBar(e.toString());
-      print(e.toString());
     });
     super.initState();
   }
@@ -98,7 +97,7 @@ class _CameraLiveViewPageState extends State<CameraLiveViewPage>
     return Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
-          title: const Text('Live Stream Example'),
+          title: const Text('Live Stream'),
           actions: <Widget>[
             PopupMenuButton<String>(
               onSelected: (choice) => _onMenuSelected(choice, context),
@@ -276,10 +275,8 @@ class _CameraLiveViewPageState extends State<CameraLiveViewPage>
       if (error is PlatformException) {
         _showDialog(
             context, "Error", "Failed to start stream: ${error.message}");
-        print(error.message);
       } else {
         _showDialog(context, "Error", "Failed to start stream: $error");
-        print(error.message);
       }
     });
   }

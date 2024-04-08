@@ -21,6 +21,7 @@ import 'package:stream_it_1_0/presentation/live_feed_capture_screen/live_feed_ca
 import 'package:stream_it_1_0/presentation/live_streaming_screen/live_streaming_screen.dart';
 import 'package:stream_it_1_0/presentation/app_navigation_screen/app_navigation_screen.dart';
 import 'package:stream_it_1_0/presentation/camera_live_view_page/camera_live_view_page.dart';
+import 'package:stream_it_1_0/presentation/splash_screen/splash_screen.dart';
 import 'package:stream_it_1_0/routes/app_routes.dart';
 
 class AppRoutes {
@@ -68,6 +69,8 @@ class AppRoutes {
 
   static const String cameraLiveViewPage = '/camera_live_view_page';
 
+  static const String splashScreen = '/splash_screen';
+
   // static Widget liveFeedCaptureScreen({required String liveID, required String userID, required bool isHost}) {
   //   return LiveFeedCaptureScreen(liveID: liveID, userID: userID, isHost: isHost);
   // }
@@ -95,6 +98,7 @@ class AppRoutes {
     streamSetupScreen: (context) => StreamSetupScreen(),
     streamingScreen: (context) => StreamingScreen(),
     cameraLiveViewPage: (context) => CameraLiveViewPage(),
+    splashScreen: (context) => SplashScreen(),
   };
 
 }
