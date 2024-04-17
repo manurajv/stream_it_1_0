@@ -277,9 +277,23 @@ class _PostDataItemWidgetState extends State<PostDataItemWidget> {
       time = 'just now';
     } else if (difference.inHours < 1) {
       time = '${difference.inMinutes} min ago';
+    } else if (difference.inDays < 1) {
+      time = '${difference.inHours} ${difference.inHours == 1 ? 'hour' : 'hours'} ago';
+    } else if (difference.inDays < 2) {
+      time = '1 day ago';
+    } else if (difference.inDays < 30) {
+      time = '${difference.inDays} days ago';
+    } else if (difference.inDays < 365) {
+      int months = (difference.inDays / 30).floor();
+      time = '$months ${months == 1 ? 'month' : 'months'} ago';
     } else {
-      int hours = difference.inHours;
-      time = '$hours ${hours == 1 ? 'hour' : 'hours'} ago';
+      int years = (difference.inDays / 365).floor();
+      int remainingMonths = (difference.inDays % 365) ~/ 30;
+      if (remainingMonths == 0) {
+        time = '$years ${years == 1 ? 'year' : 'years'} ago';
+      } else {
+        time = '$years ${years == 1 ? 'year' : 'years'}, $remainingMonths ${remainingMonths == 1 ? 'month' : 'months'} ago';
+      }
     }
 
     return time;
@@ -491,10 +505,27 @@ class _PostDataItemWidgetState extends State<PostDataItemWidget> {
                         var now = DateTime.now();
                         var difference = now.difference(createdAt!);
                         var time = '';
-                        if (difference.inHours < 1) {
+                        if (difference.inMinutes < 1) {
+                          time = 'just now';
+                        } else if (difference.inHours < 1) {
                           time = '${difference.inMinutes} min ago';
+                        } else if (difference.inDays < 1) {
+                          time = '${difference.inHours} ${difference.inHours == 1 ? 'hour' : 'hours'} ago';
+                        } else if (difference.inDays < 2) {
+                          time = '1 day ago';
+                        } else if (difference.inDays < 30) {
+                          time = '${difference.inDays} days ago';
+                        } else if (difference.inDays < 365) {
+                          int months = (difference.inDays / 30).floor();
+                          time = '$months ${months == 1 ? 'month' : 'months'} ago';
                         } else {
-                          time = '${difference.inHours} hr ago';
+                          int years = (difference.inDays / 365).floor();
+                          int remainingMonths = (difference.inDays % 365) ~/ 30;
+                          if (remainingMonths == 0) {
+                            time = '$years ${years == 1 ? 'year' : 'years'} ago';
+                          } else {
+                            time = '$years ${years == 1 ? 'year' : 'years'}, $remainingMonths ${remainingMonths == 1 ? 'month' : 'months'} ago';
+                          }
                         }
                         var proPicUrl = commentData?['proPicUrl'] ?? '';
                         return ListTile(

@@ -2,9 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:stream_it_1_0/core/app_export.dart';
 import 'package:stream_it_1_0/widgets/custom_button.dart';
 
-// ignore: must_be_immutable
-class FollowersItemWidget extends StatelessWidget {
-  FollowersItemWidget();
+class FollowersItemWidget extends StatefulWidget {
+  final Map<String, dynamic> usersData;
+
+  FollowersItemWidget({Key? key, required this.usersData}) : super(key: key);
+
+  @override
+  State<FollowersItemWidget> createState() => _FollowersItemWidget();
+}
+
+class _FollowersItemWidget extends State<FollowersItemWidget> {
+
+  @override
+  void initState() {
+    super.initState();
+    print(widget.usersData['profileImageUrl']);
+    print(Constants.getUId());
+    print(widget.usersData['uid']);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -12,41 +27,26 @@ class FollowersItemWidget extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         CustomImageView(
-          imagePath: ImageConstant.img8148x48,
-          height: getSize(
-            50,
-          ),
-          width: getSize(
-            50,
-          ),
-          radius: BorderRadius.circular(
-            getHorizontalSize(
-              25,
-            ),
-          ),
+          url: widget.usersData['profileImageUrl'].toString(),
+          height: getSize(50),
+          width: getSize(50),
+          radius: BorderRadius.circular(getHorizontalSize(25)),
         ),
         Container(
-          width: getHorizontalSize(
-            112,
-          ),
-          margin: getMargin(
-            left: 16,
-            top: 5,
-          ),
+          width: getHorizontalSize(150),
+          margin: getMargin(left: 16, top: 5),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Text(
-                "Suggested User",
+                widget.usersData['name'],
                 overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.left,
                 style: AppStyle.txtGilroySemiBold18,
               ),
               Padding(
-                padding: getPadding(
-                  top: 5,
-                ),
+                padding: getPadding(top: 5),
                 child: Text(
                   "new user",
                   overflow: TextOverflow.ellipsis,
@@ -58,19 +58,20 @@ class FollowersItemWidget extends StatelessWidget {
           ),
         ),
         Spacer(),
-        CustomButton(
-          onTap: (){
+        Constants.getUId() == widget.usersData['uid']
+            ? Text("Your profile", style: TextStyle(color: Colors.grey))
+            : CustomButton(
+          onTap: () {
             showDialog(
               context: context,
               builder: (BuildContext context) {
-                return AlertDialog( // Example Dialog
+                return AlertDialog(
                   title: Text("Follow User"),
                   content: Text("You are following User Name"),
                   actions: [
                     TextButton(
                       onPressed: () {
-                        // Your confirmation logic here
-                        Navigator.pop(context); // Close dialog
+                        Navigator.pop(context);
                       },
                       child: Text("OK"),
                     ),
@@ -79,20 +80,12 @@ class FollowersItemWidget extends StatelessWidget {
               },
             );
           },
-          height: getVerticalSize(
-            34,
-          ),
-          width: getHorizontalSize(
-            65,
-          ),
+          height: getVerticalSize(34),
+          width: getHorizontalSize(65),
           text: "Follow",
-          margin: getMargin(
-            top: 7,
-            bottom: 8,
-          ),
+          margin: getMargin(top: 7, bottom: 8),
         ),
       ],
     );
   }
-
 }

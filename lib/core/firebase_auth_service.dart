@@ -1,6 +1,12 @@
+import 'dart:io';
+import 'package:http/http.dart' as http;
+import 'package:path/path.dart' as path;
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:path_provider/path_provider.dart';
 
 class FirebaseAuthService {
   final _firebaseAuth = FirebaseAuth.instance;
@@ -18,14 +24,50 @@ class FirebaseAuthService {
   }
 
   // Save User Data to Firestore
-  Future<void> saveUserDataToFirestore(User user) async {
+  Future<void> saveUserDataToFirestore(User user, String imageUrl) async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     await firestore.collection('users').doc(user.uid).set({
+      'uid': user.uid,
       'name': user.displayName,
       'email': user.email,
       'profilePicture': user.photoURL,
+      'profileImageUrl': imageUrl,
       // ... other fields as needed
     });
+  }
+
+  Future<String> uploadImageToFirestore(String imageUrl) async {
+    try {
+      // Download the image from the URL
+      var response = await http.get(Uri.parse(imageUrl));
+      if (response.statusCode == 200) {
+        // Create a temporary file to store the downloaded image
+        var tempDir = await getTemporaryDirectory();
+        var tempPath = path.join(tempDir.path, 'temp_image.jpg');
+        var file = File(tempPath);
+        await file.writeAsBytes(response.bodyBytes);
+
+        var storageRef = FirebaseStorage.instance.ref().child('profile_images').child('${DateTime.now().millisecondsSinceEpoch}.jpg');
+        await storageRef.putFile(file);
+
+        // Get the download URL of the uploaded image
+        var downloadUrl = await storageRef.getDownloadURL();
+
+        // Save the download URL to Firestore
+        await FirebaseFirestore.instance.collection('images').add({
+          'imageUrl': downloadUrl,
+        });
+
+        // Return the download URL
+        return downloadUrl;
+      } else {
+        print('Failed to download image: ${response.statusCode}');
+        return '';
+      }
+    } catch (e) {
+      print('Error uploading image to Firestore: $e');
+      return '';
+    }
   }
 
   // // Sign In with Email and Password

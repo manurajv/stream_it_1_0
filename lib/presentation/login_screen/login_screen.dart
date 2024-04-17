@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:stream_it_1_0/main.dart';
@@ -72,9 +74,12 @@ class _LoginScreenState extends State<LoginScreen> {
         await Constants.setEmail(facebookEmail);
         await Constants.setPicture(profilePictureURL);
 
+        String imageUrl = await _authService.uploadImageToFirestore(profilePictureURL);
+
 
         UserCredential userCredential = await _authService.signInWithFacebook();
-        await _authService.saveUserDataToFirestore(userCredential.user!);
+        await _authService.saveUserDataToFirestore(userCredential.user!, imageUrl);
+        await Constants.setUId(userCredential.user!.uid);
 
         // Navigate to HomeScreen
         Navigator.pushReplacementNamed(context, AppRoutes.homeScreen);

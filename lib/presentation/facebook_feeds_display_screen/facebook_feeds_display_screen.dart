@@ -153,7 +153,7 @@ class _FacebookFeedsDisplayScreenState extends State<FacebookFeedsDisplayScreen>
             margin: getMargin(left: 16, top: 13, bottom: 14),
           ),
           centerTitle: true,
-          title: AppbarTitle(text: "StreamIT Feed"),
+          title: AppbarTitle(text: "Stream it Feed"),
         ),
         drawer: SizedBox(
           width: MediaQuery.of(context).size.width * 0.75,

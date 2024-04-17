@@ -7,6 +7,7 @@ class Constants{
   static const _keyFacebookName= 'facebookName';
   static const _keyEmail= 'facebookEmail';
   static const _keyPicture= 'facebookPicture';
+  static const _keyUId= 'UId';
 
   static const _selectedIndex = 4;
 
@@ -32,10 +33,15 @@ class Constants{
     await _preferences.setInt(_selectedIndex as String, selectedIndex);
   }
 
+  static Future setUId(String Uid) async {
+    await _preferences.setString(_keyUId , Uid);
+  }
+
   static String? getAccessToken() => _preferences.getString(_keyAccessToken);
   static String? getFacebookName() => _preferences.getString(_keyFacebookName);
   static String? getEmail() => _preferences.getString(_keyEmail);
   static String? getPicture() => _preferences.getString(_keyPicture);
+  static String? getUId() => _preferences.getString(_keyUId);
   static int? getSelectedIndex() => _preferences.getInt(_selectedIndex as String);
 
   static const String Settings = "Settings";
