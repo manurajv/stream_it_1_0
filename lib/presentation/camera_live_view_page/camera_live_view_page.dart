@@ -1,9 +1,15 @@
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'package:apivideo_live_stream/apivideo_live_stream.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:stream_it_1_0/settings_screen/settings_screen.dart';
 import 'package:stream_it_1_0/types/params.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 
 import 'package:stream_it_1_0/core/constants/constants.dart';
 
@@ -34,6 +40,10 @@ class _CameraLiveViewPageState extends State<CameraLiveViewPage>
   Params config = Params();
   late final ApiVideoLiveStreamController _controller;
   bool _isStreaming = false;
+  List fetchedComments = [];
+  String? liveVideoId;
+  AccessToken? _accessToken;
+
 
   @override
   void initState() {
@@ -113,24 +123,25 @@ class _CameraLiveViewPageState extends State<CameraLiveViewPage>
           ],
         ),
         body: SafeArea(
-          child: Center(
-            child: Column(
-              children: <Widget>[
-                Expanded(
-                  child: Container(
-                    child: Padding(
-                      padding: const EdgeInsets.all(1.0),
-                      child: Center(
-                        child: ApiVideoCameraPreview(controller: _controller),
+          child: Stack(
+              children: [
+                Center( // Your camera view
+                  child: Column(
+                    children: <Widget>[
+                      Expanded(
+                        child: Container(
+                          child: ApiVideoCameraPreview(controller: _controller),
                       ),
                     ),
+                    _controlRowWidget()
+                    ],
                   ),
                 ),
-                _controlRowWidget()
+                CommentOverlay(comments: fetchedComments),
               ],
             ),
           ),
-        ));
+        );
   }
 
   void _onMenuSelected(String choice, BuildContext context) {
@@ -157,27 +168,27 @@ class _CameraLiveViewPageState extends State<CameraLiveViewPage>
       mainAxisSize: MainAxisSize.max,
       children: <Widget>[
         IconButton(
-          icon: const Icon(Icons.cameraswitch),
+          icon: const Icon(FluentIcons.camera_switch_24_filled),
           color: apiVideoOrange,
           onPressed:
           liveStreamController != null ? onSwitchCameraButtonPressed : null,
         ),
         IconButton(
-          icon: const Icon(Icons.mic_off),
+          icon: const Icon(FluentIcons.mic_off_24_filled),
           color: apiVideoOrange,
           onPressed: liveStreamController != null
               ? onToggleMicrophoneButtonPressed
               : null,
         ),
         IconButton(
-          icon: const Icon(Icons.fiber_manual_record),
+          icon: const Icon(FluentIcons.live_24_filled),
           color: Colors.red,
           onPressed: liveStreamController != null && !_isStreaming
               ? onStartStreamingButtonPressed
               : null,
         ),
         IconButton(
-            icon: const Icon(Icons.stop),
+            icon: const Icon(FluentIcons.live_off_24_filled),
             color: Colors.red,
             onPressed: liveStreamController != null && _isStreaming
                 ? onStopStreamingButtonPressed
@@ -307,6 +318,55 @@ class _CameraLiveViewPageState extends State<CameraLiveViewPage>
     });
   }
 }
+
+class CommentOverlay extends StatelessWidget {
+  final List comments;
+
+  CommentOverlay({required this.comments});
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned( // Position this correctly within your layout
+      bottom: 150,
+      left: 10,
+      child: Container(
+        padding: EdgeInsets.all(10),
+        decoration: BoxDecoration(
+            color: Colors.black.withOpacity(0.5),
+            borderRadius: BorderRadius.circular(10)
+        ),
+        child: Column(
+          children: comments.map((comment) =>
+              Text(comment['from']['name'] + ": " + comment['message'])
+          ).toList(),
+        ),
+      ),
+    );
+  }
+}
+
+Future<List<String>> getLiveVideoIds(String accessToken) async {
+  final apiUrl = 'https://graph.facebook.com/me/live_videos?access_token=$accessToken';
+
+  final response = await http.get(Uri.parse(apiUrl));
+
+  if (response.statusCode == 200) {
+    final data = json.decode(response.body);
+    final List<dynamic> liveVideosData = data['data'];
+
+    List<String> liveVideoIds = [];
+    for (var videoData in liveVideosData) {
+      // Check if the video is live
+      if (videoData['status'] == 'LIVE') {
+        liveVideoIds.add(videoData['id']);
+      }
+    }
+    return liveVideoIds;
+  } else {
+    throw Exception('Failed to load live videos');
+  }
+}
+
 
 Future<void> _showDialog(
     BuildContext context, String title, String description) async {

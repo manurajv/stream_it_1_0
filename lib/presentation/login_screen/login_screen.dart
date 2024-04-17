@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:stream_it_1_0/main.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:stream_it_1_0/core/constants/constants.dart';
 import 'package:stream_it_1_0/routes/app_routes.dart';
@@ -52,7 +53,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   _handleLogin() async {
     try {
-      final LoginResult result = await FacebookAuth.instance.login(permissions: ["public_profile"]);
+      final LoginResult result = await FacebookAuth.instance.login(permissions: ["email","public_profile"]);
       if (result.status == LoginStatus.success) {
         _accessToken = result.accessToken;
 
@@ -65,15 +66,20 @@ class _LoginScreenState extends State<LoginScreen> {
         print(facebookEmail);
         print(facebookName);
         print(profilePictureURL);
+        print(_accessToken?.token);
+        await Constants.setAccessToken(_accessToken!.token);
         await Constants.setFacebookName(facebookName);
         await Constants.setEmail(facebookEmail);
         await Constants.setPicture(profilePictureURL);
+
 
         UserCredential userCredential = await _authService.signInWithFacebook();
         await _authService.saveUserDataToFirestore(userCredential.user!);
 
         // Navigate to HomeScreen
         Navigator.pushReplacementNamed(context, AppRoutes.homeScreen);
+
+        saveLoginState(true);
 
       } else {
         print(result.status);
@@ -129,10 +135,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 onTap: _handleLogin,
                 alignment: Alignment.center,
                 height: getVerticalSize(
-                  34,
+                  50,
                 ),
                 width: getHorizontalSize(
-                  150,
+                  200,
                 ),
                 text: "Login With Facebook",
                 margin: getMargin(

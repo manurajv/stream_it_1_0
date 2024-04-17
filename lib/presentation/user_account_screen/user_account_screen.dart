@@ -7,6 +7,9 @@ import 'package:stream_it_1_0/widgets/app_bar/appbar_title.dart';
 import 'package:stream_it_1_0/widgets/app_bar/custom_app_bar.dart';
 import 'package:stream_it_1_0/widgets/custom_icon_button.dart';
 import 'package:stream_it_1_0/core/constants/constants.dart';
+import 'package:stream_it_1_0/core/firebase_auth_service.dart';
+
+import '../../main.dart';
 
 class UserAccountScreen extends StatefulWidget { // Changed to StatefulWidget
   @override
@@ -17,6 +20,7 @@ class _UserAccountScreenState extends State<UserAccountScreen> {
   String _facebookName = "Loading...";
   String _email = "Loading...";
   String _picture = "Loading...";
+  final FirebaseAuthService _authService = FirebaseAuthService();
 
   @override
   void initState() {
@@ -275,8 +279,10 @@ class _UserAccountScreenState extends State<UserAccountScreen> {
   }
 
   _handleLogout() async {
-    //await FacebookAuth.instance.logOut();
+    await FacebookAuth.instance.logOut();
+    await _authService.signOut();
     Navigator.pushReplacementNamed(context, AppRoutes.loginScreen);
+    saveLoginState(false);
     setState(() {
 
     });

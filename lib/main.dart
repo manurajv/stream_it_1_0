@@ -1,4 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 import 'firebase_options.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +9,7 @@ import 'core/constants/constants.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
+  final loggedIn = await isLoggedIn();
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);
@@ -18,12 +20,24 @@ void main() async{
   );
 
   ZegoUIKit().initLog().then((value){
-    runApp(const MyApp());
+    runApp(MyApp(isLoggedIn: loggedIn));
   });
 }
 
+Future<bool> isLoggedIn() async {
+  final prefs = await SharedPreferences.getInstance();
+  return prefs.getBool('isLoggedIn') ?? false;
+}
+
+Future<void> saveLoginState(bool isLoggedIn) async {
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.setBool('isLoggedIn', isLoggedIn);
+}
+
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final bool isLoggedIn;
+  const MyApp({super.key, required this.isLoggedIn});
+  
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -32,7 +46,7 @@ class MyApp extends StatelessWidget {
       ),
       title: 'stream_it',
       debugShowCheckedModeBanner: false,
-      initialRoute: AppRoutes.splashScreen,
+      initialRoute: isLoggedIn ? AppRoutes.homeScreen : AppRoutes.splashScreen,
       routes: AppRoutes.routes,
     );
   }

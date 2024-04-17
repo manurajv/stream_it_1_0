@@ -4,7 +4,6 @@ import 'package:stream_it_1_0/presentation/call_screen_content/call_screen_conte
 import 'package:stream_it_1_0/presentation/chat_screen_content/chat_screen_content.dart';
 import 'package:stream_it_1_0/presentation/friend_list_screen/friend_list_screen.dart';
 import 'package:stream_it_1_0/presentation/home_screen/home_screen.dart';
-import 'package:stream_it_1_0/presentation/home_screen_content/home_screen_content.dart';
 import 'package:stream_it_1_0/presentation/login_screen/login_screen.dart';
 import 'package:stream_it_1_0/presentation/qr_codes_screen/qr_codes_screen.dart';
 import 'package:stream_it_1_0/presentation/preview_video_screen/preview_video_screen.dart';
@@ -81,7 +80,6 @@ class AppRoutes {
     //callScreenContent: (context) => CallScreenContent(),
     friendListScreen: (context) => FriendListScreen(),
     chatScreenContent: (context) => ChatScreenContent(),
-    homeScreenContent: (context) => HomeScreenContent(),
     qrCodesScreen: (context) => QrCodesScreen(),
     previewVideoScreen: (context) => PreviewVideoScreen(),
     facebookFeedsDisplayScreen: (context) => FacebookFeedsDisplayScreen(),
