@@ -1,15 +1,17 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
+import 'package:flutter/foundation.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:stream_it_1_0/core/app_export.dart';
-import 'package:stream_it_1_0/widgets/custom_icon_button.dart';
 import 'package:stream_it_1_0/widgets/custom_text_form_field.dart';
 import 'package:stream_it_1_0/core/constants/constants.dart';
-import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
-
-import '../../../widgets/custom_button.dart';
+import 'package:stream_it_1_0/core/constants/push_notification_service.dart';
 
 // ignore: must_be_immutable
 class PostDataItemWidget extends StatefulWidget {
@@ -26,11 +28,13 @@ class _PostDataItemWidgetState extends State<PostDataItemWidget> {
 
   DateTime currentTime = DateTime.now();
   bool _showOverlay = false;
-  String? proPicUrl = Constants.getPicture();
+  String? proPicUrl = Constants.getProPic();
   int? _likes;
   int? _comments;
   int? _shares;
   bool _isLiked = false;
+  String? _postOwnerId;
+  String? _token;
 
   @override
   void initState() {
@@ -40,13 +44,43 @@ class _PostDataItemWidgetState extends State<PostDataItemWidget> {
     FirebaseFirestore.instance.collection('posts').snapshots();
     _comments = widget.postData['comments'] ?? 0;
     _shares = widget.postData['shares'] ?? 0;
+    _postOwnerId = widget.postData['uid'];
+    _getPostOwnerToken(_postOwnerId!).then((token) {
+      if (token != null) {
+        setState(() {
+          _token = token;
+        });
+      }
+    });
   }
+
+  Future<String?> _getPostOwnerToken(String ownerId) async {
+    try {
+      var tokenDoc = await FirebaseFirestore.instance.collection('user_tokens').doc(ownerId).get();
+      if (tokenDoc.exists) {
+        if (mounted) {
+          setState(() {
+            _token = tokenDoc.data()?['token'];
+          });
+        }
+        return tokenDoc.data()?['token'];
+      } else {
+        print('Token not found for user with ID: $ownerId');
+        return null;
+      }
+    } catch (e) {
+      print('Error fetching token for user with ID: $ownerId\nError: $e');
+      return null;
+    }
+  }
+
 
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: double.maxFinite,
+      decoration: AppDecoration.outlineGray70011,
       child: Container(
         decoration: AppDecoration.outlineGray70011,
         child: Column(
@@ -54,7 +88,7 @@ class _PostDataItemWidgetState extends State<PostDataItemWidget> {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             Padding(
-              padding: getPadding(left: 16, top: 16, right: 16),
+              padding: getPadding(left: 16, top: 16, right: 16, bottom: 16),
               child: Stack(
                 children: [
                   Row(
@@ -62,7 +96,7 @@ class _PostDataItemWidgetState extends State<PostDataItemWidget> {
                     children: [
                       CustomImageView(
                         //imagePath: ImageConstant.imgProfileimglarge46x46,
-                        url: proPicUrl,
+                        url: widget.postData['proPic'],
                         height: getSize(46),
                         width: getSize(46),
                         radius: BorderRadius.circular(getHorizontalSize(23)),
@@ -136,7 +170,7 @@ class _PostDataItemWidgetState extends State<PostDataItemWidget> {
               alignment: Alignment.centerLeft,
               child: Container(
                 width: getHorizontalSize(330),
-                margin: getMargin(left: 16, top: 19, right: 49),
+                margin: getMargin(left: 6, top: 19, right: 49),
                 child: widget.postData.containsKey('text')
                     ? Text(
                   widget.postData['text'],
@@ -148,87 +182,87 @@ class _PostDataItemWidgetState extends State<PostDataItemWidget> {
               ),
             ),
             Padding(
-              padding: getPadding(left: 43, top: 18, right: 41),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                  _likes.toString(),
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.left,
-                    style: AppStyle.txtGilroyMedium12,
-                  ),
-                  Text(
-                    _comments.toString(),
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.left,
-                    style: AppStyle.txtGilroyMedium12,
-                  ),
-                  Text(
-                    _shares.toString(),
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.left,
-                    style: AppStyle.txtGilroyMedium12,
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              margin: getMargin(top: 10),
-              padding: getPadding(left: 34, top: 8, right: 34, bottom: 8),
-              decoration: AppDecoration.outlineBluegray1001,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  IconButton(
-                    icon: _isLiked ? Icon(FluentIcons.thumb_like_16_filled) : Icon(FluentIcons.thumb_like_16_regular),
-                    onPressed: () {
-                      _toggleLike();
-                    },
-                  ),
-                  Padding(
-                    padding: getPadding(left: 8, top: 4, bottom: 4),
-                    child: Text(
-                      "Like",
+              padding: getPadding(left: 43, top: 16, right: 41, bottom: 25),
+                child: Container(
+                  decoration: AppDecoration.outlineBluegray1001,
+                  child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                    _likes.toString() + '  Likes',
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.left,
                       style: AppStyle.txtGilroyMedium12,
                     ),
-                  ),
-                  Spacer(
-                    flex: 53,
-                  ),
-                  IconButton(
-                    icon: Icon(FluentIcons.comment_16_regular),
-                    onPressed: () {
-                      _showCommentDrawer();
-                    },
-                  ),
-                  Padding(
-                    padding: getPadding(left: 8, top: 4, bottom: 4),
-                    child: Text(
-                      "Comment",
+                    Text(
+                      _comments.toString() + '  Comments',
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.left,
                       style: AppStyle.txtGilroyMedium12,
                     ),
-                  ),
-                  Spacer(flex: 46),
-                  IconButton(
-                    icon: Icon(FluentIcons.share_android_16_regular),
-                    onPressed: () {
-                    },
-                  ),
-                  Padding(
-                    padding: getPadding(left: 8, top: 4, bottom: 4),
-                    child: Text(
-                      "Share",
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.left,
-                      style: AppStyle.txtGilroyMedium12,
+                    // Text(
+                    //   _shares.toString() + '',
+                    //   overflow: TextOverflow.ellipsis,
+                    //   textAlign: TextAlign.left,
+                    //   style: AppStyle.txtGilroyMedium12,
+                    // ),
+                    Container(
+                      margin: getMargin(top: 0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          IconButton(
+                            icon: Icon(FluentIcons.comment_16_regular),
+                            onPressed: () {
+                              _showCommentDrawer();
+                            },
+                          ),
+                          // Padding(
+                          //   padding: getPadding(left: 8, top: 4, bottom: 4),
+                          //   child: Text(
+                          //     "Comment",
+                          //     overflow: TextOverflow.ellipsis,
+                          //     textAlign: TextAlign.left,
+                          //     style: AppStyle.txtGilroyMedium12,
+                          //   ),
+                          // ),
+                          //Spacer(flex: 10,),
+                          IconButton(
+                            icon: _isLiked ? Icon(FluentIcons.thumb_like_16_filled) : Icon(FluentIcons.thumb_like_16_regular),
+                            onPressed: () {
+                              _toggleLike();
+                              //_sendPushMessage(_token!, "222222222222222222222222222222222222", "Notification5555555555555555555555555555555555");
+                            },
+                          ),
+                          // Padding(
+                          //   padding: getPadding(left: 8, top: 4, bottom: 4),
+                          //   child: Text(
+                          //     "Like",
+                          //     overflow: TextOverflow.ellipsis,
+                          //     textAlign: TextAlign.left,
+                          //     style: AppStyle.txtGilroyMedium12,
+                          //   ),
+                          // ),
+                          //Spacer(flex: 46),
+                          // IconButton(
+                          //   icon: Icon(FluentIcons.share_android_16_regular),
+                          //   onPressed: () {
+                          //   },
+                          // ),
+                          // Padding(
+                          //   padding: getPadding(left: 8, top: 4, bottom: 4),
+                          //   child: Text(
+                          //     "Share",
+                          //     overflow: TextOverflow.ellipsis,
+                          //     textAlign: TextAlign.left,
+                          //     style: AppStyle.txtGilroyMedium12,
+                          //   ),
+                          // ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
             //_buildOverlay(),
@@ -239,7 +273,12 @@ class _PostDataItemWidgetState extends State<PostDataItemWidget> {
   }
 
   Widget _buildOverlay() {
-    return _showOverlay
+
+    String currentUserId = FirebaseAuth.instance.currentUser!.uid;
+    bool isCurrentUserPost = widget.postData['uid'] == currentUserId;
+    bool isAdmin = Constants.adminUId == currentUserId;
+
+    return _showOverlay && (isCurrentUserPost || isAdmin)
         ? Positioned(
       child: Container(
         child: Row(
@@ -461,11 +500,13 @@ class _PostDataItemWidgetState extends State<PostDataItemWidget> {
         'likes': _likes,
         'likedBy': _isLiked ? FieldValue.arrayUnion([FirebaseAuth.instance.currentUser!.uid]) : FieldValue.arrayRemove([FirebaseAuth.instance.currentUser!.uid])
       });
+      _isLiked ? sendPushMessageWithoutAction(_token!, 'liked your post', Constants.getFacebookName().toString()) : print('DisLiked');
   } catch (e) {
       print("Error updating like: $e");
       // Handle error
     }
   }
+
 
   void _showCommentDrawer() {
     showModalBottomSheet(
@@ -599,7 +640,7 @@ class _PostDataItemWidgetState extends State<PostDataItemWidget> {
         await FirebaseFirestore.instance.collection('comments').add({
           'postId': widget.postId,
           'user': userId, // Assuming you have a 'users' collection with user data
-          'name': widget.postData['name'],
+          'name': Constants.getFacebookName(),
           'text': commentText,
           'createdAt': DateTime.now(),
           'proPicUrl': proPicUrl,
@@ -609,6 +650,8 @@ class _PostDataItemWidgetState extends State<PostDataItemWidget> {
         await postRef.update({
           'comments': FieldValue.increment(1), // Increment the comments count
         });
+
+        sendPushMessageWithoutAction(_token!,' Commented on your post:\n' + commentText, Constants.getFacebookName().toString());
 
         setState(() {
           _comments = (_comments ?? 0) + 1;

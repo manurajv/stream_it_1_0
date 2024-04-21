@@ -1,12 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firestore
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../followers_screen/widgets/followers_item_widget.dart';
 import 'package:stream_it_1_0/core/app_export.dart';
 import 'package:stream_it_1_0/widgets/app_bar/appbar_image.dart';
 import 'package:stream_it_1_0/widgets/app_bar/appbar_title.dart';
 import 'package:stream_it_1_0/widgets/app_bar/custom_app_bar.dart';
+import 'widgets/followers_item_widget.dart';
 
-class FollowersScreen extends StatelessWidget {
+class FollowersScreen extends StatefulWidget {
+  @override
+  _FollowersScreenState createState() => _FollowersScreenState();
+}
+
+class _FollowersScreenState extends State<FollowersScreen> {
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -16,24 +28,13 @@ class FollowersScreen extends StatelessWidget {
           height: getVerticalSize(51),
           leadingWidth: 40,
           centerTitle: true,
-          title: AppbarTitle(text: "Followers / Following"),
-          actions: [
-            AppbarImage(
-              height: getSize(24),
-              width: getSize(24),
-              svgPath: ImageConstant.imgShare,
-              margin: getMargin(
-                left: 16,
-                top: 5,
-                right: 16,
-                bottom: 14,
-              ),
-            ),
-          ],
+          title: AppbarTitle(text: "Stream it members"),
         ),
         body: StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance.collection('users').snapshots(),
-          builder: (context,snapshot) {
+          stream: FirebaseFirestore.instance.collection('users')
+              .orderBy('name', descending: false)
+              .snapshots(),
+          builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Center(
                 child: CircularProgressIndicator(),
@@ -52,100 +53,27 @@ class FollowersScreen extends StatelessWidget {
 
             return Container(
               width: double.maxFinite,
-              padding: getPadding(
-                left: 16,
-                top: 5,
-                right: 16,
-                bottom: 10,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Container(
-                    margin: getMargin(
-                      top: 11,
-                    ),
-                    padding: getPadding(
-                      left: 60,
-                      top: 12,
-                      right: 60,
-                      bottom: 12,
-                    ),
-                    decoration: AppDecoration.outlineBluegray100,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            print('Followers tapped');
-                          },
-                          child: Padding(
-                            padding: getPadding(
-                              left: 1,
-                              bottom: 5,
-                            ),
-                            child: Text(
-                              "Followers",
-                              overflow: TextOverflow.ellipsis,
-                              textAlign: TextAlign.left,
-                              style: AppStyle.txtGilroyMedium16,
-                            ),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            print('Following tapped');
-                          },
-                          child: Padding(
-                            padding: getPadding(
-                              top: 3,
-                              bottom: 1,
-                            ),
-                            child: Text(
-                              "Following",
-                              overflow: TextOverflow.ellipsis,
-                              textAlign: TextAlign.left,
-                              style: AppStyle.txtGilroyMedium16Bluegray400,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    width: getHorizontalSize(139),
-                    child: Divider(
-                      height: getVerticalSize(2),
-                      thickness: getVerticalSize(2),
-                      color: ColorConstant.blueA700,
-                      indent: getHorizontalSize(51),
-                    ),
-                  ),
-                  Padding(
-                    padding: getPadding(
-                      top: 22,
-                    ),
-                    child: ListView.separated(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 22),
+                    ListView.separated(
                       shrinkWrap: true,
                       separatorBuilder: (context, index) {
-                        return SizedBox(
-                          height: getVerticalSize(17),
-                        );
+                        return SizedBox(height: 17);
                       },
                       itemCount: snapshot.data!.docs.length,
                       itemBuilder: (context, index) {
                         final usersDoc = snapshot.data!.docs[index];
                         final usersData = usersDoc.data() as Map<String, dynamic>;
-                        return FollowersItemWidget( usersData: usersData
-                          //userName: followersList[index]['name'], // Example user name
-                          //userType: followersList[index]['type'], // Example user type
-                        );
+                        return FollowersItemWidget(usersData: usersData);
                       },
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             );
           },

@@ -1,5 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:stream_it_1_0/core/firebase_messaging_handler.dart';
+import 'package:stream_it_1_0/core/notification_service.dart';
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 import 'firebase_options.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +21,9 @@ void main() async{
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
+  NotificationService.initialize();
+  FirebaseMessagingHandler.configure();
+
   ZegoUIKit().initLog().then((value){
     runApp(MyApp(isLoggedIn: loggedIn));
   });
@@ -37,10 +42,11 @@ Future<void> saveLoginState(bool isLoggedIn) async {
 class MyApp extends StatelessWidget {
   final bool isLoggedIn;
   const MyApp({super.key, required this.isLoggedIn});
-  
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: FirebaseMessagingHandler.navigatorKey,
       theme: ThemeData(
         visualDensity: VisualDensity.standard,
       ),
@@ -50,4 +56,5 @@ class MyApp extends StatelessWidget {
       routes: AppRoutes.routes,
     );
   }
+
 }

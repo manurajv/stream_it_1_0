@@ -10,6 +10,7 @@ import 'package:path_provider/path_provider.dart';
 
 class FirebaseAuthService {
   final _firebaseAuth = FirebaseAuth.instance;
+  late final String proPicUrl;
 
   // Facebook Sign-In
   Future<UserCredential> signInWithFacebook() async {
@@ -36,6 +37,23 @@ class FirebaseAuthService {
     });
   }
 
+  Future<void> createMembers(User user) async {
+    try {
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+      var membersDocRef = firestore.collection('members').doc(user.uid);
+
+      // Use set with merge option to update the document without overwriting existing data
+      await membersDocRef.set({
+        'uid': user.uid,
+        // ... other fields as needed
+      }, SetOptions(merge: true));
+    } catch (e) {
+      print("Error creating/updating members: $e");
+      // Handle error
+    }
+  }
+
+
   Future<String> uploadImageToFirestore(String imageUrl) async {
     try {
       // Download the image from the URL
@@ -52,11 +70,6 @@ class FirebaseAuthService {
 
         // Get the download URL of the uploaded image
         var downloadUrl = await storageRef.getDownloadURL();
-
-        // Save the download URL to Firestore
-        await FirebaseFirestore.instance.collection('images').add({
-          'imageUrl': downloadUrl,
-        });
 
         // Return the download URL
         return downloadUrl;

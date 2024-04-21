@@ -86,6 +86,8 @@ class _FacebookFeedsDisplayScreenState extends State<FacebookFeedsDisplayScreen>
       imageUrl = await storageRef.getDownloadURL();
     }
 
+    String? proPic = Constants.getProPic();
+
     // Create a Firestore document to store post data
     if (text.isNotEmpty || imageUrl!.isNotEmpty) { // Only create if post has content
       await FirebaseFirestore.instance.collection('posts').add({
@@ -94,6 +96,7 @@ class _FacebookFeedsDisplayScreenState extends State<FacebookFeedsDisplayScreen>
         'text': text,
         'imageUrl': imageUrl,
         'createdAt': Timestamp.now(),
+        'proPic': Constants.getProPic(),
       });
     }
     // Clear the text box and image selection
@@ -102,6 +105,7 @@ class _FacebookFeedsDisplayScreenState extends State<FacebookFeedsDisplayScreen>
       _selectedImage = null;
       _isExpanded = false;
       _isUploading = false;
+      _initializePostCount();
     });
 
     // Show "Posted" overlay

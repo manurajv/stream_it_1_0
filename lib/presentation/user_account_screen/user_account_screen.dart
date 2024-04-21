@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
@@ -9,6 +11,8 @@ import 'package:stream_it_1_0/widgets/custom_icon_button.dart';
 import 'package:stream_it_1_0/core/constants/constants.dart';
 import 'package:stream_it_1_0/core/firebase_auth_service.dart';
 
+import '../../core/firebase_messaging_handler.dart';
+import '../../core/notification_service.dart';
 import '../../main.dart';
 
 class UserAccountScreen extends StatefulWidget { // Changed to StatefulWidget
@@ -21,11 +25,15 @@ class _UserAccountScreenState extends State<UserAccountScreen> {
   String _email = "Loading...";
   String _picture = "Loading...";
   final FirebaseAuthService _authService = FirebaseAuthService();
+  String? mtoken = "";
+  String? _uid = Constants.getUId();
 
   @override
   void initState() {
     super.initState();
     _loadFacebookData(); // Load name on screen initialization
+    requestPermission();
+    getToken();
   }
 
   void _loadFacebookData() async {
@@ -102,7 +110,13 @@ class _UserAccountScreenState extends State<UserAccountScreen> {
                               overflow: TextOverflow.ellipsis,
                               textAlign: TextAlign.left,
                               style: AppStyle.txtGilroyMedium16Bluegray400)),
-                      Padding(
+            GestureDetector(
+              onTap: (){
+                //NotificationService.onMessage("hello");
+                String token = 'fA-5b7sjTTGgA9ubQptoOh:APA91bE40RY_S1DOWQstE_4b1IEAaNyqitHRH3_FOcgT-oAlH2DqkUiH-241lqpRGogqujN-UPiiMTgQCaCJ7rgDL-z1wLmSoGbK0-qZUX4-_RfGPlmNG3RlAofw6gJBN6AN8MQhAAwk';
+
+              },
+                      child: Padding(
                           padding: getPadding(top: 29),
                           child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -124,7 +138,9 @@ class _UserAccountScreenState extends State<UserAccountScreen> {
                                     height: getSize(24),
                                     width: getSize(24))
                               ])),
-                      Padding(
+            ),
+            GestureDetector(
+                      child: Padding(
                           padding: getPadding(top: 29),
                           child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -148,7 +164,9 @@ class _UserAccountScreenState extends State<UserAccountScreen> {
                                     width: getSize(24),
                                     margin: getMargin(bottom: 1))
                               ])),
-                      Padding(
+            ),
+            GestureDetector(
+                      child: Padding(
                           padding: getPadding(top: 27),
                           child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -170,7 +188,9 @@ class _UserAccountScreenState extends State<UserAccountScreen> {
                                     height: getSize(24),
                                     width: getSize(24))
                               ])),
-                      Padding(
+            ),
+            GestureDetector(
+                      child: Padding(
                           padding: getPadding(top: 29),
                           child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -192,50 +212,61 @@ class _UserAccountScreenState extends State<UserAccountScreen> {
                                     height: getSize(24),
                                     width: getSize(24))
                               ])),
-                      Padding(
-                          padding: getPadding(top: 28),
-                          child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                CustomImageView(
-                                    svgPath: ImageConstant.imgDashboard,
-                                    height: getSize(24),
-                                    width: getSize(24)),
-                                Padding(
-                                    padding: getPadding(left: 8, top: 1),
-                                    child: Text("Theme",
-                                        overflow: TextOverflow.ellipsis,
-                                        textAlign: TextAlign.left,
-                                        style: AppStyle.txtGilroySemiBold18)),
-                                Spacer(),
-                                CustomImageView(
-                                    svgPath:
-                                        ImageConstant.imgArrowrightBlueGray600,
-                                    height: getSize(24),
-                                    width: getSize(24))
-                              ])),
-                      Padding(
-                          padding: getPadding(top: 29, bottom: 5),
-                          child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                CustomImageView(
-                                    svgPath: ImageConstant.imgQuestion,
-                                    height: getSize(24),
-                                    width: getSize(24)),
-                                Padding(
-                                    padding: getPadding(left: 8, top: 2),
-                                    child: Text("Help and feedback",
-                                        overflow: TextOverflow.ellipsis,
-                                        textAlign: TextAlign.left,
-                                        style: AppStyle.txtGilroySemiBold18)),
-                                Spacer(),
-                                CustomImageView(
-                                    svgPath:
-                                        ImageConstant.imgArrowrightBlueGray600,
-                                    height: getSize(24),
-                                    width: getSize(24))
-                              ])),
+                                  ),
+                                  GestureDetector(
+                                  child: Padding(
+                                      padding: getPadding(top: 28),
+                                      child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            CustomImageView(
+                                                svgPath: ImageConstant.imgDashboard,
+                                                height: getSize(24),
+                                                width: getSize(24)),
+                                            Padding(
+                                                padding: getPadding(left: 8, top: 1),
+                                                child: Text("Theme",
+                                                    overflow: TextOverflow.ellipsis,
+                                                    textAlign: TextAlign.left,
+                                                    style: AppStyle.txtGilroySemiBold18)),
+                                            Spacer(),
+                                            CustomImageView(
+                                                svgPath:
+                                                    ImageConstant.imgArrowrightBlueGray600,
+                                                height: getSize(24),
+                                                width: getSize(24))
+                                          ]
+                                      )
+                                  ),
+                              ),
+                              GestureDetector(
+                                onTap: (){
+                                },
+                                child: Padding(
+                                    padding: getPadding(top: 29, bottom: 5),
+                                    child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          CustomImageView(
+                                              svgPath: ImageConstant.imgQuestion,
+                                              height: getSize(24),
+                                              width: getSize(24)),
+                                          Padding(
+                                              padding: getPadding(left: 8, top: 2),
+                                              child: Text("Help and feedback",
+                                                  overflow: TextOverflow.ellipsis,
+                                                  textAlign: TextAlign.left,
+                                                  style: AppStyle.txtGilroySemiBold18)),
+                                          Spacer(),
+                                          CustomImageView(
+                                              svgPath:
+                                                  ImageConstant.imgArrowrightBlueGray600,
+                                              height: getSize(24),
+                                              width: getSize(24))
+                                        ]
+                                    )
+                                ),
+                              ),
                       GestureDetector(
                           onTap: () {
                             print('LogOut tapped');
@@ -278,13 +309,49 @@ class _UserAccountScreenState extends State<UserAccountScreen> {
     Navigator.pop(context);
   }
 
+  void requestPermission() async{
+    // Request permission for notifications
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+    NotificationSettings settings = await messaging.requestPermission(
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
+    );
+
+    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      print('User granted permission for notifications');
+    } else {
+      print('User declined permission for notifications');
+    }
+  }
+
+  void getToken() async{
+    await FirebaseMessaging.instance.getToken().then(
+            (token) {
+          setState(() {
+            mtoken = token;
+            print("My token is $mtoken");
+            Constants.setUserToken(mtoken!);
+          });
+          saveToken(token!);
+        }
+    );
+  }
+
+  void saveToken(String token) async{
+    await FirebaseFirestore.instance.collection("user_tokens").doc(_uid).set({
+    'token' : token,
+    });
+  }
+
   _handleLogout() async {
     await FacebookAuth.instance.logOut();
     await _authService.signOut();
-    Navigator.pushReplacementNamed(context, AppRoutes.loginScreen);
     saveLoginState(false);
-    setState(() {
-
-    });
+    Navigator.pushReplacementNamed(context, AppRoutes.loginScreen);
   }
 }

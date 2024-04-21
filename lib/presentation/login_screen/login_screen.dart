@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:stream_it_1_0/main.dart';
@@ -11,6 +12,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:stream_it_1_0/core/firebase_auth_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:stream_it_1_0/widgets/custom_text_form_field.dart';
+import 'package:stream_it_1_0/core/firebase_auth_service.dart';
+
 
 import '../../widgets/custom_button.dart';
 
@@ -57,6 +60,7 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       final LoginResult result = await FacebookAuth.instance.login(permissions: ["email","public_profile"]);
       if (result.status == LoginStatus.success) {
+        // Handle successful login
         _accessToken = result.accessToken;
 
         final userData = await FacebookAuth.instance.getUserData();
@@ -65,57 +69,55 @@ class _LoginScreenState extends State<LoginScreen> {
         final facebookName = _userData?['name'] ?? 'Name not provided';
         final facebookEmail = _userData?['email'] ?? 'Email not provided';
         String profilePictureURL = _userData?['picture']['data']['url'] ?? 'Url not provided';
-        print(facebookEmail);
-        print(facebookName);
-        print(profilePictureURL);
-        print(_accessToken?.token);
+
         await Constants.setAccessToken(_accessToken!.token);
         await Constants.setFacebookName(facebookName);
         await Constants.setEmail(facebookEmail);
         await Constants.setPicture(profilePictureURL);
 
         String imageUrl = await _authService.uploadImageToFirestore(profilePictureURL);
-
+        await Constants.setProPic(imageUrl);
 
         UserCredential userCredential = await _authService.signInWithFacebook();
         await _authService.saveUserDataToFirestore(userCredential.user!, imageUrl);
         await Constants.setUId(userCredential.user!.uid);
+        
+        await _authService.createMembers(userCredential.user!);
+
+        // Update login state
+        saveLoginState(true);
 
         // Navigate to HomeScreen
         Navigator.pushReplacementNamed(context, AppRoutes.homeScreen);
-
-        saveLoginState(true);
-
       } else {
+        // Handle login failure
         print(result.status);
         print(result.message);
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Facebook Login Failed'))
+        );
+        // Update login state
+        saveLoginState(false);
       }
-      setState(() {
-        _isLoggedIn = false;
-
-      });
-      // final result = await FacebookAuth.instance.login(
-      //     permissions: ["public_profile", "email"]);
-      //   final userData = await FacebookAuth.instance.getUserData(
-      //     fields: "name,email,picture.width(200)",);
-
     } catch (e) {
-      // Handle exceptions, display an error message
+      // Handle exceptions
       print('Facebook Login Error: $e');
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Facebook Login Failed'))
       );
+      // Update login state
+      saveLoginState(false);
     }
   }
 
-  _handleLogout() async {
-    await FacebookAuth.instance.logOut();
-    _accessToken = null;
-    _userData = null;
-    setState(() {
-
-    });
-  }
+  // _handleLogout() async {
+  //   await FacebookAuth.instance.logOut();
+  //   _accessToken = null;
+  //   _userData = null;
+  //   setState(() {
+  //
+  //   });
+  // }
 
 
   @override

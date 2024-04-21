@@ -7,10 +7,10 @@ class CallScreenWidget extends StatelessWidget {
         required this.callID,
         required this.userID,
         required this.username})
-      : super(key: key);
-  final String callID;
-  final String userID;
-  final String username;
+        : super(key: key);
+    final String callID;
+    final String userID;
+    final String username;
 
   @override
   Widget build(BuildContext context) {
