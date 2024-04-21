@@ -4,6 +4,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:stream_it_1_0/core/constants/constants.dart';
 import '../../core/constants/push_notification_service.dart';
 import '../../core/utils/size_utils.dart';
+import '../../widgets/app_bar/appbar_image.dart';
+import '../../widgets/app_bar/appbar_title.dart';
+import '../../widgets/app_bar/custom_app_bar.dart';
 import '../../widgets/custom_image_view.dart';
 import 'widgets/call_screen_widget.dart';
 import 'package:stream_it_1_0/widgets/custom_button.dart';
@@ -11,6 +14,7 @@ import 'package:stream_it_1_0/widgets/custom_text_form_field.dart';
 
 class CallScreenContent extends StatefulWidget {
   const CallScreenContent({Key? key}) : super(key: key);
+  static GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
   @override
   State<CallScreenContent> createState() => _CallScreenContentState();
@@ -104,89 +108,98 @@ class _CallScreenContentState extends State<CallScreenContent> {
     if (userId == null) {
       return CircularProgressIndicator(); // Show loading indicator while authentication state is being checked
     }
-    return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                userName,
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 20),
-              Container(
-                width: MediaQuery.of(context).size.width * 0.6,
-                child: CustomTextFormField(
-                  controller: callIdController,
-                  hintText: 'Enter Call ID',
+    return SafeArea(
+      child: Scaffold(
+        appBar: CustomAppBar(
+          height: getVerticalSize(51),
+          leadingWidth: 40,
+          centerTitle: true,
+          title: AppbarTitle(text: "Stream it Call Option"),
+        ),
+        body: SafeArea(
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(height: 20),
+                Text(
+                  userName,
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
-              ),
-              SizedBox(height: 20),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: followedUserNames.length,
-                  itemBuilder: (context, index) {
-                    String userId = followedUserIds[index];
-                    String userName = followedUserNames[index];
-                    String userImageUrl = followedUserImageUrls[index]; // Fetch user image URL
-                    return ListTile(
-                      leading: CustomImageView(
-                        url: userImageUrl,
-                        radius: BorderRadius.circular(getHorizontalSize(50)),
-                      ),
-                      title: Text(userName,
-                        style: TextStyle(fontWeight: FontWeight.bold
+                SizedBox(height: 20),
+                Container(
+                  width: MediaQuery.of(context).size.width * 0.6,
+                  child: CustomTextFormField(
+                    controller: callIdController,
+                    hintText: 'Enter Call ID',
+                  ),
+                ),
+                SizedBox(height: 20),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: followedUserNames.length,
+                    itemBuilder: (context, index) {
+                      String userId = followedUserIds[index];
+                      String userName = followedUserNames[index];
+                      String userImageUrl = followedUserImageUrls[index]; // Fetch user image URL
+                      return ListTile(
+                        leading: CustomImageView(
+                          url: userImageUrl,
+                          radius: BorderRadius.circular(getHorizontalSize(50)),
+                        ),
+                        title: Text(userName,
+                          style: TextStyle(fontWeight: FontWeight.bold
+                          ),
+                        ),
+                        onTap: () {
+                          setState(() {
+                            selectedUser = userId;
+                            callIdController.text = userId.substring(20, 26);
+                            _getUserToken();
+                            _getUserName();
+                          });
+                        },
+                        selected: selectedUser == userId,
+                      );
+                    },
+                  ),
+                ),
+                SizedBox(height: 20),
+                CustomButton(
+                  onTap: () async {
+                    if (_token != null) {
+                      Navigator.push(context, MaterialPageRoute(
+                        builder: (context) => CallScreenWidget(
+                          callID: callIdController.text,
+                          userID: userId!,
+                          username: userName,
                         ),
                       ),
-                      onTap: () {
-                        setState(() {
-                          selectedUser = userId;
-                          callIdController.text = userId.substring(20, 26);
-                          _getUserToken();
-                          _getUserName();
-                        });
-                      },
-                      selected: selectedUser == userId,
-                    );
-                  },
-                ),
-              ),
-              SizedBox(height: 20),
-              CustomButton(
-                onTap: () async {
-                  if (_token != null) {
-                    Navigator.push(context, MaterialPageRoute(
-                      builder: (context) => CallScreenWidget(
-                        callID: callIdController.text,
-                        userID: userId!,
-                        username: userName,
-                      ),
-                    ),
-                    );
-                    await sendPushMessageWithAction(
-                      _token!,
-                       'is calling',
-                      Constants.getFacebookName().toString(),
-                      callIdController.text,
-                      selectedUser!,
-                      _reciever!,
-                    );
-                  } else {
-                    print('Token is null. Unable to send push notification.');
-                  }
-                 },
-                text: "Join Call",
-                shape: ButtonShape.RoundedBorder6,
-                padding: ButtonPadding.PaddingAll8,
-                variant: ButtonVariant.FillBlueA700,
-                fontStyle: ButtonFontStyle.GilroyMedium16,
-                width: MediaQuery.of(context).size.width * 0.6,
-              )
-            ],
+                      );
+                      await sendPushMessageWithAction(
+                        _token!,
+                         'is calling',
+                        Constants.getFacebookName().toString(),
+                        callIdController.text,
+                        selectedUser!,
+                        _reciever!,
+                      );
+                    } else {
+                      print('Token is null. Unable to send push notification.');
+                    }
+                   },
+                  text: "Join Call",
+                  shape: ButtonShape.RoundedBorder6,
+                  padding: ButtonPadding.PaddingAll8,
+                  variant: ButtonVariant.FillBlueA700,
+                  fontStyle: ButtonFontStyle.GilroyMedium16,
+                  width: MediaQuery.of(context).size.width * 0.6,
+                )
+              ],
+            ),
           ),
         ),
-      ),
+      )
     );
   }
 

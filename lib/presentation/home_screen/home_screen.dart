@@ -11,7 +11,8 @@ import '../facebook_feeds_display_screen/facebook_feeds_display_screen.dart';
 import 'package:stream_it_1_0/core/constants/constants.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  final int selectedIndex;
+  const HomeScreen({Key? key, required this.selectedIndex}) : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -20,6 +21,12 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 4;
   bool isAddIconClicked = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedIndex = widget.selectedIndex;
+  }
 
 
   static List<Widget> _widgetOptions = <Widget>[

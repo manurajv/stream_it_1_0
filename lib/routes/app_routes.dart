@@ -76,7 +76,7 @@ class AppRoutes {
 
 
   static Map<String, WidgetBuilder> routes = {
-    homeScreen: (context) => HomeScreen(),
+    homeScreen: (context) => HomeScreen(selectedIndex: 4,),
     //callScreenContent: (context) => CallScreenContent(),
     friendListScreen: (context) => FriendListScreen(),
     chatScreenContent: (context) => ChatScreenContent(),

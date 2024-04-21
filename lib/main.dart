@@ -27,6 +27,8 @@ void main() async{
   ZegoUIKit().initLog().then((value){
     runApp(MyApp(isLoggedIn: loggedIn));
   });
+
+
 }
 
 Future<bool> isLoggedIn() async {

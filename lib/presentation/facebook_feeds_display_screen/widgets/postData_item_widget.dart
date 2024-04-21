@@ -485,26 +485,27 @@ class _PostDataItemWidgetState extends State<PostDataItemWidget> {
   }
 
   void _toggleLike() async {
-  setState(() {
-    // Toggle like status
-    _isLiked = !_isLiked;
-    // Increase or decrease likes count based on like status
-    _likes = (_likes ?? 0) + (_isLiked ? 1 : -1);
-  });
+    final facebookName = Constants.getFacebookName()?.toString() ?? 'Unknown';
+    setState(() {
+      // Toggle like status
+      _isLiked = !_isLiked;
+      // Increase or decrease likes count based on like status
+      _likes = (_likes ?? 0) + (_isLiked ? 1 : -1);
+    });
 
-  try {
-    String postId = widget.postId;
-    var postRef = FirebaseFirestore.instance.collection('posts').doc(postId);
-      // Update likes count and likedBy field on Firebase
-      await postRef.update({
-        'likes': _likes,
-        'likedBy': _isLiked ? FieldValue.arrayUnion([FirebaseAuth.instance.currentUser!.uid]) : FieldValue.arrayRemove([FirebaseAuth.instance.currentUser!.uid])
-      });
-      _isLiked ? sendPushMessageWithoutAction(_token!, 'liked your post', Constants.getFacebookName().toString()) : print('DisLiked');
-  } catch (e) {
-      print("Error updating like: $e");
-      // Handle error
-    }
+    try {
+      String postId = widget.postId;
+      var postRef = FirebaseFirestore.instance.collection('posts').doc(postId);
+        // Update likes count and likedBy field on Firebase
+        await postRef.update({
+          'likes': _likes,
+          'likedBy': _isLiked ? FieldValue.arrayUnion([FirebaseAuth.instance.currentUser!.uid]) : FieldValue.arrayRemove([FirebaseAuth.instance.currentUser!.uid])
+        });
+        _isLiked ? sendPushMessageWithoutAction(_token!, 'liked your post', facebookName) : print('DisLiked');
+    } catch (e) {
+        print("Error updating like: $e");
+        // Handle error
+      }
   }
 
 
@@ -634,6 +635,7 @@ class _PostDataItemWidgetState extends State<PostDataItemWidget> {
 
   void _addComment() async {
     String commentText = _commentController.text.trim();
+    final comment = ' Commented on your post:\n' + (commentText ?? '');
     if (commentText.isNotEmpty) {
       try {
         String userId = FirebaseAuth.instance.currentUser!.uid;
@@ -651,7 +653,7 @@ class _PostDataItemWidgetState extends State<PostDataItemWidget> {
           'comments': FieldValue.increment(1), // Increment the comments count
         });
 
-        sendPushMessageWithoutAction(_token!,' Commented on your post:\n' + commentText, Constants.getFacebookName().toString());
+        sendPushMessageWithoutAction(_token!,comment, Constants.getFacebookName().toString());
 
         setState(() {
           _comments = (_comments ?? 0) + 1;

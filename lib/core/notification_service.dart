@@ -13,5 +13,6 @@ class NotificationService {
     InitializationSettings(android: initializationSettingsAndroid);
 
     await _notificationsPlugin.initialize(initializationSettings);
+
   }
 }

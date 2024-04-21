@@ -1,8 +1,12 @@
+import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../../core/utils/size_utils.dart';
 import '../../routes/app_routes.dart';
+import '../../widgets/app_bar/appbar_title.dart';
+import '../../widgets/app_bar/custom_app_bar.dart';
 import '../stream_setup_screen/stream_setup_screen.dart';
 
 class StartStreamingScreenContent extends StatelessWidget {
@@ -10,8 +14,11 @@ class StartStreamingScreenContent extends StatelessWidget {
   Widget build(BuildContext context) {
     ScreenUtil.init(context, designSize: Size(360, 690));
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Start Streaming Screen'),
+      appBar: CustomAppBar(
+        height: getVerticalSize(51),
+        leadingWidth: 40,
+        centerTitle: true,
+        title: AppbarTitle(text: "Stream it Start Stream"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -22,13 +29,13 @@ class StartStreamingScreenContent extends StatelessWidget {
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Image.network(
-                    'https://img.freepik.com/free-vector/realistic-front-view-smartphone-mockup-mobile-iphone-purple-frame-with-blank-white-display-vector_90220-959.jpg?size=338&ext=jpg&ga=GA1.1.1700460183.1708300800&semt=ais',
-                    scale: 3,
-                  ),
+                  // Image.network(
+                  //   'https://img.freepik.com/free-vector/realistic-front-view-smartphone-mockup-mobile-iphone-purple-frame-with-blank-white-display-vector_90220-959.jpg?size=338&ext=jpg&ga=GA1.1.1700460183.1708300800&semt=ais',
+                  //   scale: 3,
+                  // ),
                   SizedBox(width: 20.w),
                   _buildStartButton(
-                    icon: FontAwesomeIcons.desktop,
+                    icon: FluentIcons.screenshot_record_28_filled,
                     title: 'Start Live with Screen',
                     onPressed: () => Navigator.push(
                       context,
@@ -42,13 +49,13 @@ class StartStreamingScreenContent extends StatelessWidget {
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Image.network(
-                    'https://img.freepik.com/free-vector/realistic-front-view-smartphone-mockup-mobile-iphone-purple-frame-with-blank-white-display-vector_90220-959.jpg?size=338&ext=jpg&ga=GA1.1.1700460183.1708300800&semt=ais',
-                    scale: 3,
-                  ),
+                  // Image.network(
+                  //   'https://img.freepik.com/free-vector/realistic-front-view-smartphone-mockup-mobile-iphone-purple-frame-with-blank-white-display-vector_90220-959.jpg?size=338&ext=jpg&ga=GA1.1.1700460183.1708300800&semt=ais',
+                  //   scale: 3,
+                  // ),
                   SizedBox(width: 20.w),
                   _buildStartButton(
-                    icon: FontAwesomeIcons.video,
+                    icon: FluentIcons.camera_28_filled,
                     title: 'Start Live with Camera',
                     onPressed: () {
                       //Navigator.pushNamed(context, AppRoutes.liveStreamingScreen);
