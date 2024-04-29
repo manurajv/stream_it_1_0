@@ -50,7 +50,6 @@ dependencies:
   adaptive_theme: ^3.6.0
 
   flutter_local_notifications: ^17.0.1
-  awesome_notifications: ^0.8.2
 
   firebase_core: ^2.27.1
   firebase_auth: ^4.17.9

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:stream_it_1_0/core/app_export.dart';
 import 'package:stream_it_1_0/core/constants/constants.dart';
 import '../../core/constants/push_notification_service.dart';
 import '../../core/utils/size_utils.dart';
@@ -147,9 +148,11 @@ class _CallScreenContentState extends State<CallScreenContent> {
                           url: userImageUrl,
                           radius: BorderRadius.circular(getHorizontalSize(50)),
                         ),
-                        title: Text(userName,
-                          style: TextStyle(fontWeight: FontWeight.bold
-                          ),
+                        title: Text(
+                          userName,
+                          style: selectedUser == userId
+                              ? Theme.of(context).textTheme.headlineSmall?.copyWith(color: ColorConstant.blueA700) // Change color for selected user
+                              : Theme.of(context).textTheme.headlineSmall,
                         ),
                         onTap: () {
                           setState(() {

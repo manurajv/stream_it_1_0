@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:stream_it_1_0/core/app_export.dart';
 import 'package:stream_it_1_0/presentation/call_screen_content/call_screen_content.dart';
 import 'package:stream_it_1_0/presentation/followers_screen/followers_screen.dart';
 import '../chat_screen_content/chat_screen_content.dart';
@@ -66,9 +67,9 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.white.withOpacity(0.5),
-        selectedItemColor: Colors.redAccent,
-        unselectedItemColor: Colors.grey,
+        //backgroundColor: Colors.white.withOpacity(0.5),
+        selectedItemColor: ColorConstant.blueA700,
+        //unselectedItemColor: Colors.white70,
         showSelectedLabels: false,
         showUnselectedLabels: false,
         elevation: 0, // Remove default elevation
@@ -83,8 +84,8 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           BottomNavigationBarItem(
             icon: isAddIconClicked
-                ? Icon(CupertinoIcons.multiply_circle_fill, size: 45, color: Colors.redAccent) // Change to a different icon
-                : Icon(CupertinoIcons.plus_circle_fill, size: 45, color: Colors.redAccent),
+                ? Icon(CupertinoIcons.multiply_circle_fill, size: 45, color: ColorConstant.blueA700) // Change to a different icon
+                : Icon(CupertinoIcons.plus_circle_fill, size: 45, color: ColorConstant.blueA700),
             label: 'Plus',
           ),
           BottomNavigationBarItem(

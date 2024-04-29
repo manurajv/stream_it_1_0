@@ -15,6 +15,7 @@ import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:stream_it_1_0/core/constants/constants.dart';
+import 'package:stream_it_1_0/theme/app_style.dart';
 
 class FacebookFeedsDisplayScreen extends StatefulWidget {
 
@@ -28,11 +29,20 @@ class _FacebookFeedsDisplayScreenState extends State<FacebookFeedsDisplayScreen>
   String? _facebookName;
   XFile? _selectedImage;
   final TextEditingController _textController = TextEditingController();
+  bool _isDarkModeEnabled = false;
 
   @override
   void initState() {
     super.initState();
     _initializePostCount();
+    _loadDarkModeStatus();
+  }
+
+  Future<void> _loadDarkModeStatus() async {
+    bool isDarkMode = await Constants.isDarkModeEnabled();
+    setState(() {
+      _isDarkModeEnabled = isDarkMode;
+    });
   }
 
   void _handleImageSelection() async {
@@ -115,7 +125,7 @@ class _FacebookFeedsDisplayScreenState extends State<FacebookFeedsDisplayScreen>
         child: Container(
           padding: EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: Colors.white,
+            //color: Colors.white,
             borderRadius: BorderRadius.circular(10),
           ),
           child: Column(
@@ -143,17 +153,23 @@ class _FacebookFeedsDisplayScreenState extends State<FacebookFeedsDisplayScreen>
     return SafeArea(
       child: Scaffold(
         key: _scaffoldKey,
-        backgroundColor: ColorConstant.gray50,
+        //backgroundColor: ColorConstant.gray50,
         appBar: CustomAppBar(
           height: getVerticalSize(51),
           leadingWidth: 40,
+          // leading: AppbarImage(
+          //   onTap: () {
+          //     _scaffoldKey.currentState?.openDrawer();
+          //   },
+          //   height: getSize(24),
+          //   width: getSize(24),
+          //   svgPath: ImageConstant.imgMenu24x24,
+          //   margin: getMargin(left: 16, top: 13, bottom: 14),
+          // ),
           leading: AppbarImage(
-            onTap: () {
-              _scaffoldKey.currentState?.openDrawer();
-            },
+            svgPath: ImageConstant.streamit_svg,
             height: getSize(24),
-            width: getSize(24),
-            svgPath: ImageConstant.imgMenu24x24,
+            width: getSize(30),
             margin: getMargin(left: 16, top: 13, bottom: 14),
           ),
           centerTitle: true,
@@ -168,7 +184,7 @@ class _FacebookFeedsDisplayScreenState extends State<FacebookFeedsDisplayScreen>
         body: Stack(
             children: [
               Padding(
-              padding: getPadding(left: 16, top: 22, right: 16),
+              padding: getPadding(left: 16, top: 0, right: 16),
               child: Column(
                 children: [
                     Container(
@@ -197,10 +213,12 @@ class _FacebookFeedsDisplayScreenState extends State<FacebookFeedsDisplayScreen>
                           IconButton(
                             icon: Icon(FluentIcons.image_add_24_regular),
                             onPressed: _handleImageSelection,
+                            color: _isDarkModeEnabled ? ColorConstant.blueA700 : ColorConstant.blueGray900,
                           ),
                           IconButton(
                             icon: Icon(FluentIcons.send_24_regular),
                             onPressed: _handlePostSubmission,
+                              color: _isDarkModeEnabled ? ColorConstant.blueA700 : ColorConstant.blueGray900,
                           ),
                         ],
                       ),

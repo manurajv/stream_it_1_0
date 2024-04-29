@@ -11,10 +11,10 @@ class AppStyle {
     fontWeight: FontWeight.w600,
   );
 
-  static TextStyle txtGilroyBold18 = TextStyle(
+  static TextStyle txtGilroyBold20 = TextStyle(
     color: ColorConstant.blueA700,
     fontSize: getFontSize(
-      18,
+      20,
     ),
     fontFamily: 'Gilroy',
     fontWeight: FontWeight.w700,

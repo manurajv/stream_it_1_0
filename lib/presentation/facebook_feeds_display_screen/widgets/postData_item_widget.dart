@@ -35,6 +35,7 @@ class _PostDataItemWidgetState extends State<PostDataItemWidget> {
   bool _isLiked = false;
   String? _postOwnerId;
   String? _token;
+  bool _isDarkModeEnabled = false;
 
   @override
   void initState() {
@@ -51,6 +52,14 @@ class _PostDataItemWidgetState extends State<PostDataItemWidget> {
           _token = token;
         });
       }
+    });
+    _loadDarkModeStatus();
+  }
+
+  Future<void> _loadDarkModeStatus() async {
+    bool isDarkMode = await Constants.isDarkModeEnabled();
+    setState(() {
+      _isDarkModeEnabled = isDarkMode;
     });
   }
 
@@ -80,9 +89,9 @@ class _PostDataItemWidgetState extends State<PostDataItemWidget> {
   Widget build(BuildContext context) {
     return Container(
       width: double.maxFinite,
-      decoration: AppDecoration.outlineGray70011,
+      //decoration: AppDecoration.outlineGray70011,
       child: Container(
-        decoration: AppDecoration.outlineGray70011,
+        //decoration: AppDecoration.outlineGray70011,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.end,
@@ -117,7 +126,7 @@ class _PostDataItemWidgetState extends State<PostDataItemWidget> {
                               widget.postData['name'],
                               overflow: TextOverflow.ellipsis,
                               textAlign: TextAlign.left,
-                              style: AppStyle.txtGilroySemiBold16,
+                              style: Theme.of(context).textTheme.headlineSmall,
                             )
                                 : Text("Name Not Fetched"),
                             Padding(
@@ -182,9 +191,8 @@ class _PostDataItemWidgetState extends State<PostDataItemWidget> {
               ),
             ),
             Padding(
-              padding: getPadding(left: 43, top: 16, right: 41, bottom: 25),
+              padding: getPadding(left: 43, top: 4, right: 41, bottom: 10),
                 child: Container(
-                  decoration: AppDecoration.outlineBluegray1001,
                   child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -216,6 +224,7 @@ class _PostDataItemWidgetState extends State<PostDataItemWidget> {
                             onPressed: () {
                               _showCommentDrawer();
                             },
+                            color: _isDarkModeEnabled ? ColorConstant.blueA700 : ColorConstant.blueGray900,
                           ),
                           // Padding(
                           //   padding: getPadding(left: 8, top: 4, bottom: 4),
@@ -233,6 +242,7 @@ class _PostDataItemWidgetState extends State<PostDataItemWidget> {
                               _toggleLike();
                               //_sendPushMessage(_token!, "222222222222222222222222222222222222", "Notification5555555555555555555555555555555555");
                             },
+                            color: _isDarkModeEnabled ? ColorConstant.blueA700 : ColorConstant.blueGray900,
                           ),
                           // Padding(
                           //   padding: getPadding(left: 8, top: 4, bottom: 4),
@@ -266,6 +276,7 @@ class _PostDataItemWidgetState extends State<PostDataItemWidget> {
               ),
             ),
             //_buildOverlay(),
+            Divider(thickness: 1.0,),
           ],
         ),
       ),
@@ -381,7 +392,7 @@ class _PostDataItemWidgetState extends State<PostDataItemWidget> {
           child: Container(
             padding: EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: Colors.white,
+              //color: Colors.white,
               borderRadius: BorderRadius.circular(10),
             ),
             child: Column(
@@ -458,7 +469,7 @@ class _PostDataItemWidgetState extends State<PostDataItemWidget> {
           child: Container(
             padding: EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: Colors.white,
+              //color: Colors.white,
               borderRadius: BorderRadius.circular(10),
             ),
             child: Column(

@@ -1,8 +1,10 @@
+import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stream_it_1_0/core/app_export.dart';
 import 'package:stream_it_1_0/widgets/app_bar/appbar_image.dart';
 import 'package:stream_it_1_0/widgets/app_bar/appbar_title.dart';
@@ -27,6 +29,7 @@ class _UserAccountScreenState extends State<UserAccountScreen> {
   final FirebaseAuthService _authService = FirebaseAuthService();
   String? mtoken = "";
   String? _uid = Constants.getUId();
+  bool _isDarkModeEnabled = false;
 
   @override
   void initState() {
@@ -34,6 +37,14 @@ class _UserAccountScreenState extends State<UserAccountScreen> {
     _loadFacebookData(); // Load name on screen initialization
     requestPermission();
     getToken();
+    _loadDarkModeStatus();
+  }
+
+  Future<void> _loadDarkModeStatus() async {
+    bool isDarkMode = await Constants.isDarkModeEnabled();
+    setState(() {
+      _isDarkModeEnabled = isDarkMode;
+    });
   }
 
   void _loadFacebookData() async {
@@ -51,7 +62,7 @@ class _UserAccountScreenState extends State<UserAccountScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
-            backgroundColor: ColorConstant.gray50,
+            //backgroundColor: ColorConstant.gray50,
             appBar: CustomAppBar(
                 height: getVerticalSize(42),
                 leadingWidth: 40,
@@ -66,11 +77,11 @@ class _UserAccountScreenState extends State<UserAccountScreen> {
                 centerTitle: true,
                 title: AppbarTitle(text: "Welcome! $_facebookName"),
                 actions: [
-                  AppbarImage(
-                      height: getSize(24),
-                      width: getSize(24),
-                      svgPath: ImageConstant.imgOverflowmenu,
-                      margin: getMargin(left: 16, right: 16, bottom: 5))
+                  // AppbarImage(
+                  //     height: getSize(24),
+                  //     width: getSize(24),
+                  //     svgPath: ImageConstant.imgOverflowmenu,
+                  //     margin: getMargin(left: 16, right: 16, bottom: 5))
                 ]),
             body: Container(
                 width: double.maxFinite,
@@ -90,20 +101,20 @@ class _UserAccountScreenState extends State<UserAccountScreen> {
                                 radius: BorderRadius.circular(
                                     getHorizontalSize(75)),
                                 alignment: Alignment.center),
-                            CustomIconButton(
-                                height: 30,
-                                width: 30,
-                                margin: getMargin(top: 5, right: 2),
-                                alignment: Alignment.topRight,
-                                child: CustomImageView(
-                                    svgPath: ImageConstant.imgForward))
+                            // CustomIconButton(
+                            //     height: 30,
+                            //     width: 30,
+                            //     margin: getMargin(top: 5, right: 2),
+                            //     alignment: Alignment.topRight,
+                            //     child: CustomImageView(
+                            //         svgPath: ImageConstant.imgForward))
                           ])),
                       Padding(
                           padding: getPadding(top: 19),
                           child: Text(_facebookName,
                               overflow: TextOverflow.ellipsis,
                               textAlign: TextAlign.left,
-                              style: AppStyle.txtGilroyBold18)),
+                              style: Theme.of(context).textTheme.headlineMedium)),
                       Padding(
                           padding: getPadding(top: 7),
                           child: Text(_email,
@@ -124,19 +135,21 @@ class _UserAccountScreenState extends State<UserAccountScreen> {
                                 CustomImageView(
                                     svgPath: ImageConstant.imgNotification,
                                     height: getSize(24),
-                                    width: getSize(24)),
+                                    width: getSize(24),
+                                color: _isDarkModeEnabled ? ColorConstant.blueA700 : Colors.black,
+                                ),
                                 Padding(
                                     padding: getPadding(left: 8, top: 1),
                                     child: Text("Notifications",
                                         overflow: TextOverflow.ellipsis,
                                         textAlign: TextAlign.left,
-                                        style: AppStyle.txtGilroySemiBold18)),
+                                        style: Theme.of(context).textTheme.bodyLarge)),
                                 Spacer(),
                                 CustomImageView(
-                                    svgPath:
-                                        ImageConstant.imgArrowrightBlueGray600,
+                                    svgPath: ImageConstant.imgArrowrightBlueGray600,
                                     height: getSize(24),
-                                    width: getSize(24))
+                                    width: getSize(24),
+                                ),
                               ])),
             ),
             GestureDetector(
@@ -149,13 +162,15 @@ class _UserAccountScreenState extends State<UserAccountScreen> {
                                     svgPath: ImageConstant.imgSettings,
                                     height: getSize(24),
                                     width: getSize(24),
-                                    margin: getMargin(bottom: 1)),
+                                    margin: getMargin(bottom: 1),
+                                  color: _isDarkModeEnabled ? ColorConstant.blueA700 : Colors.black,
+                                ),
                                 Padding(
                                     padding: getPadding(left: 8, top: 3),
                                     child: Text("Language",
                                         overflow: TextOverflow.ellipsis,
                                         textAlign: TextAlign.left,
-                                        style: AppStyle.txtGilroySemiBold18)),
+                                        style: Theme.of(context).textTheme.bodyLarge)),
                                 Spacer(),
                                 CustomImageView(
                                     svgPath:
@@ -165,8 +180,7 @@ class _UserAccountScreenState extends State<UserAccountScreen> {
                                     margin: getMargin(bottom: 1))
                               ])),
             ),
-            GestureDetector(
-                      child: Padding(
+                        Padding(
                           padding: getPadding(top: 27),
                           child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -174,21 +188,37 @@ class _UserAccountScreenState extends State<UserAccountScreen> {
                                 CustomImageView(
                                     svgPath: ImageConstant.imgMoonoutline,
                                     height: getSize(24),
-                                    width: getSize(24)),
+                                    width: getSize(24),
+                                  color: _isDarkModeEnabled ? ColorConstant.blueA700 : Colors.black,
+                                ),
                                 Padding(
                                     padding: getPadding(left: 8, top: 1),
                                     child: Text("Dark mode",
                                         overflow: TextOverflow.ellipsis,
                                         textAlign: TextAlign.left,
-                                        style: AppStyle.txtGilroySemiBold18)),
+                                        style: Theme.of(context).textTheme.bodyLarge)),
                                 Spacer(),
-                                CustomImageView(
-                                    svgPath:
-                                        ImageConstant.imgArrowrightBlueGray600,
-                                    height: getSize(24),
-                                    width: getSize(24))
-                              ])),
-            ),
+                                Switch(
+                                  value: _isDarkModeEnabled,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _isDarkModeEnabled = value;
+                                      Constants.setDarkModeEnabled(value);
+                                      // Set light theme when the switch is off
+                                      if (!value) {
+                                        AdaptiveTheme.of(context).setLight();
+                                      }
+                                      // Set dark theme when the switch is on
+                                      else {
+                                        AdaptiveTheme.of(context).setDark();
+                                      }
+                                    });
+                                  },
+                                ),
+
+                              ]
+                          )
+                      ),
             GestureDetector(
                       child: Padding(
                           padding: getPadding(top: 29),
@@ -198,13 +228,15 @@ class _UserAccountScreenState extends State<UserAccountScreen> {
                                 CustomImageView(
                                     svgPath: ImageConstant.imgSettings24x24,
                                     height: getSize(24),
-                                    width: getSize(24)),
+                                    width: getSize(24),
+                                  color: _isDarkModeEnabled ? ColorConstant.blueA700 : Colors.black,
+                                ),
                                 Padding(
                                     padding: getPadding(left: 8, top: 2),
                                     child: Text("General settings",
                                         overflow: TextOverflow.ellipsis,
                                         textAlign: TextAlign.left,
-                                        style: AppStyle.txtGilroySemiBold18)),
+                                        style: Theme.of(context).textTheme.bodyLarge)),
                                 Spacer(),
                                 CustomImageView(
                                     svgPath:
@@ -222,13 +254,15 @@ class _UserAccountScreenState extends State<UserAccountScreen> {
                                             CustomImageView(
                                                 svgPath: ImageConstant.imgDashboard,
                                                 height: getSize(24),
-                                                width: getSize(24)),
+                                                width: getSize(24),
+                                              color: _isDarkModeEnabled ? ColorConstant.blueA700 : Colors.black,
+                                            ),
                                             Padding(
                                                 padding: getPadding(left: 8, top: 1),
                                                 child: Text("Theme",
                                                     overflow: TextOverflow.ellipsis,
                                                     textAlign: TextAlign.left,
-                                                    style: AppStyle.txtGilroySemiBold18)),
+                                                    style: Theme.of(context).textTheme.bodyLarge)),
                                             Spacer(),
                                             CustomImageView(
                                                 svgPath:
@@ -250,17 +284,19 @@ class _UserAccountScreenState extends State<UserAccountScreen> {
                                           CustomImageView(
                                               svgPath: ImageConstant.imgQuestion,
                                               height: getSize(24),
-                                              width: getSize(24)),
+                                              width: getSize(24),
+                                            color: _isDarkModeEnabled ? ColorConstant.blueA700 : Colors.black,
+                                          ),
                                           Padding(
                                               padding: getPadding(left: 8, top: 2),
                                               child: Text("Help and feedback",
                                                   overflow: TextOverflow.ellipsis,
                                                   textAlign: TextAlign.left,
-                                                  style: AppStyle.txtGilroySemiBold18)),
+                                                  style: Theme.of(context).textTheme.bodyLarge)),
                                           Spacer(),
                                           CustomImageView(
                                               svgPath:
-                                                  ImageConstant.imgArrowrightBlueGray600,
+                                              ImageConstant.imgArrowrightBlueGray600,
                                               height: getSize(24),
                                               width: getSize(24))
                                         ]
@@ -288,13 +324,15 @@ class _UserAccountScreenState extends State<UserAccountScreen> {
                                 CustomImageView(
                                     svgPath: ImageConstant.imgQuestion,
                                     height: getSize(24),
-                                    width: getSize(24)),
+                                    width: getSize(24),
+                                  color: _isDarkModeEnabled ? ColorConstant.blueA700 : Colors.black,
+                                ),
                                 Padding(
                                     padding: getPadding(left: 8, top: 2),
                                     child: Text("LogOut",
                                         overflow: TextOverflow.ellipsis,
                                         textAlign: TextAlign.left,
-                                        style: AppStyle.txtGilroySemiBold18)),
+                                        style: Theme.of(context).textTheme.bodyLarge)),
                                 Spacer(),
                                 CustomImageView(
                                     svgPath:

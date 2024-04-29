@@ -1,6 +1,10 @@
 class ImageConstant {
   static String streamit = 'assets/images/streamit.png';
 
+  static String streamit_t = 'assets/images/streamit_t.png';
+
+  static String streamit_svg = 'assets/images/streamit_svg.svg';
+
   static String imgSettings24x24 = 'assets/images/img_settings_24x24.svg';
 
   static String imgDashboard24x24 = 'assets/images/img_dashboard_24x24.svg';

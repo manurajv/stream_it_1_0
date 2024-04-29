@@ -58,7 +58,7 @@ class _FollowersItemWidgetState extends State<FollowersItemWidget> {
         url: widget.usersData['profileImageUrl'].toString(),
         radius: BorderRadius.circular(getHorizontalSize(50)),
         ),
-      title: Text(widget.usersData['name']),
+      title: Text(widget.usersData['name'], style: Theme.of(context).textTheme.headlineSmall,),
       subtitle: _userCreationDate != null
           ? Text("Joined: ${DateFormat('yy-MM-dd').format(_userCreationDate!)}")
           : null,

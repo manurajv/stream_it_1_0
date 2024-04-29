@@ -23,7 +23,7 @@ class _FollowersScreenState extends State<FollowersScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        backgroundColor: ColorConstant.gray50,
+        //backgroundColor: ColorConstant.gray50,
         appBar: CustomAppBar(
           height: getVerticalSize(51),
           leadingWidth: 40,

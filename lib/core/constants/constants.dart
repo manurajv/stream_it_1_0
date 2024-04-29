@@ -3,6 +3,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 class Constants{
   static late SharedPreferences _preferences;
 
+  static const String darkModeKey = 'dark_mode_enabled';
+
   static const adminUId = 'ExmCMJQCsxclU9B7CC3WmbFMbNr2';
 
   static const _keyAccessToken= 'accesstoken';
@@ -48,6 +50,11 @@ class Constants{
     await _preferences.setString(_keyUserToken , UserToken);
   }
 
+  static Future<void> setDarkModeEnabled(bool value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(darkModeKey, value);
+  }
+
   static String? getAccessToken() => _preferences.getString(_keyAccessToken);
   static String? getFacebookName() => _preferences.getString(_keyFacebookName);
   static String? getEmail() => _preferences.getString(_keyEmail);
@@ -62,5 +69,10 @@ class Constants{
   static const List<String> choices = <String>[
   Settings,
   ];
+
+  static Future<bool> isDarkModeEnabled() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(darkModeKey) ?? false;
+  }
 
 }
